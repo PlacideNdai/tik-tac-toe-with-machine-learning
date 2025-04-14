@@ -43,27 +43,17 @@ public class Model {
         for (JButton button : buttons) {
             button.setEnabled(false);
         }
-
         // pop after the game to show who won.
         JOptionPane.showMessageDialog(new Frame(), winner + " Won", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-        // resetGame();
+        resetGame(buttons);
     }
 
-
     // cleaning the game for a new session, same scores for now.
-    void resetGame(JButton[] buttons, String gameState, boolean gameWon, boolean whosTurn) {
-        // cleaning the board
-        for (int a = 0; a < buttons.length; a++) {
-            buttons[a].setText("");
+    void resetGame(JButton[] buttons) {
+        // enable the buttons all the buttons and cleaning board
+        for (JButton button : buttons) {
+            button.setEnabled(true);
+            button.setText("");
         }
-
-        // clean string
-        gameState = "---------";
-
-        // computer turn
-        whosTurn = false;
-
-        // game state over to false
-        gameWon = false;
     }
 }

@@ -53,37 +53,42 @@ public class Control extends View implements ActionListener {
             // Who won? logic below will determind who won.
             // according to class instruction, DRAW = COMPUTER WON.
 
-            if(model.gameOverWith(gameState).equals("X")){
+            if (model.gameOverWith(gameState).equals("X")) {
                 // System.out.println("Computer won");
 
                 model.gameResultsShow(buttons, model.gameOverWith(gameState));
-            } else if (model.gameOverWith(gameState).equals("O")){
+                gameReset();
+            } else if (model.gameOverWith(gameState).equals("O")) {
                 // System.out.println("Player won");
 
                 model.gameResultsShow(buttons, model.gameOverWith(gameState));
-            } else if(model.gameOverWith(gameState).equals("")){
+                gameReset();
+            } else if (model.gameOverWith(gameState).equals("")) {
                 // game going on
 
             } else {
                 // System.out.println("Computer won by Draw");
+                // model.gameResultsShow(buttons, "X");
                 model.gameResultsShow(buttons, "X");
-            }
 
+                gameReset();
+            }
 
         } else if (btn.getText().equals("Start New Game")) {
-            // cleaning the board
-            for (int a = 0; a < buttons.length; a++) {
-                buttons[a].setText("");
-            }
-
-            // clean string
-            gameState = "---------";
-
-            // computer turn
-            whosTurn = false;
-
-            // game state over to false
-            gameWon = false;
+            gameReset();
         }
+    }
+
+    void gameReset() {
+        // board cleaning
+        model.resetGame(buttons);
+        // clean string
+        gameState = "---------";
+
+        // computer turn
+        whosTurn = false;
+
+        // game state over to false
+        gameWon = false;
     }
 }
