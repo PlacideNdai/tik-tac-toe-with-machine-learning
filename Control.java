@@ -1,94 +1,86 @@
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
-
 public class Control extends View implements ActionListener {
 
-    // default variables
-
-    boolean whosTurn = false;
-    String gameState = "---------";
-    String playerChar = "O";
-    String computerChar = "X";
-    boolean gameWon = false; // false should be the computer turn
-
-    Model model = new Model();
+    private String stringGame = "---------";
+    private char player = 'O';
+    private char computer = 'X';
+    private boolean isPlayerTurn = false;
+    private Model model = new Model();
 
     public static void main(String[] args) {
         new Control();
     }
 
+
     Control() {
-        for (int a = 0; a < buttons.length; a++) {
+        for(int a =0; a < buttons.length; a ++){
             buttons[a].addActionListener(this);
         }
 
-        Restart.addActionListener(this);
+        computerMove();
     }
+
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JButton btn = (JButton) e.getSource();
+        for(int a =0; a < buttons.length; a ++){
+            if(e.getSource() == buttons[a] && stringGame.charAt(a) == '-'){
+                buttons[a].setText(String.valueOf(player));
+                updateGameString(a, player);
+                isPlayerTurn = false;
 
-        if (btn.getText().equals("")) {
-            // game going
-            btn.setText(whosTurn ? playerChar : computerChar);
-            whosTurn = !whosTurn;
 
-            // Getting index of the button so that it can be used to update the button
-            int btnIndex = -1;
-            for (int a = 0; a < buttons.length; a++) {
-                if (buttons[a] == btn) {
-                    btnIndex = a;
-                    break;
+                if(model.isWinner(player, stringGame)){
+                    gameReset();
+                    System.out.println("Player Wins");
+                    return;
+                } else if(model.isDraw(stringGame)){
+                    gameReset();
+                    System.out.println("Draw");
+                    return;
                 }
+
+                computerMove();
             }
+        }
 
-            // updating a state string
-            if (btnIndex != -1) {
-                gameState = gameState.substring(0, btnIndex) + btn.getText() + gameState.substring(btnIndex + 1);
-            }
-
-            // Who won? logic below will determind who won.
-            // according to class instruction, DRAW = COMPUTER WON.
-
-            if (model.gameOverWith(gameState).equals("X")) {
-                // System.out.println("Computer won");
-
-                model.gameResultsShow(buttons, model.gameOverWith(gameState));
-                gameReset();
-            } else if (model.gameOverWith(gameState).equals("O")) {
-                // System.out.println("Player won");
-
-                model.gameResultsShow(buttons, model.gameOverWith(gameState));
-                gameReset();
-            } else if (model.gameOverWith(gameState).equals("")) {
-                // game going on
-
-            } else {
-                // System.out.println("Computer won by Draw");
-                // model.gameResultsShow(buttons, "X");
-                model.gameResultsShow(buttons, "X");
-
-                gameReset();
-            }
-
-        } else if (btn.getText().equals("Start New Game")) {
+        // new game button clicked
+        if(e.getSource() == Restart){
             gameReset();
         }
     }
 
-    void gameReset() {
-        // board cleaning
-        model.resetGame(buttons);
-        // clean string
-        gameState = "---------";
+    void computerMove(){
+        int move = model.computerMove(stringGame);
+        if(move != -1){
+            buttons[move].setText(String.valueOf(computer));
+            updateGameString(move, computer);
+            isPlayerTurn = true;
 
-        // computer turn
-        whosTurn = false;
+            if(model.isWinner(computer, stringGame)){
+                gameReset();
+                System.out.println("Computer Wins");
+            } else if(model.isDraw(stringGame)){
+                gameReset();
+                System.out.println("Draw");
+            }
+        }
+    }
 
-        // game state over to false
-        gameWon = false;
+    void gameReset(){
+        model.boardReset(buttons);
+        stringGame = "---------";
+        isPlayerTurn = false;
+        computerMove();
+    }
+
+    void updateGameString(int index, char player){
+        StringBuilder stringBuilder = new StringBuilder(stringGame);
+        stringBuilder.setCharAt(index, player);
+        stringGame = stringBuilder.toString();
     }
 }

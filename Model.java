@@ -1,58 +1,47 @@
-import java.awt.Frame;
-
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 
 public class Model {
 
-    String gameOverWith(String line) {
-        // holizontal win conditions
-        if (line.charAt(0) == line.charAt(1) && line.charAt(1) == line.charAt(2) && line.charAt(0) != '-') {
-            return String.valueOf(line.charAt(0));
-        } else if (line.charAt(3) == line.charAt(4) && line.charAt(4) == line.charAt(5) && line.charAt(3) != '-') {
-            return String.valueOf(line.charAt(3));
-        } else if (line.charAt(6) == line.charAt(7) && line.charAt(7) == line.charAt(8) && line.charAt(6) != '-') {
-            return String.valueOf(line.charAt(6));
-        }
+    // winning condition
+    boolean isWinner(char player, String gameString){
+        int[][] winConditions = {
+            {0,1,2},
+            {3,4,5},
+            {6,7,8},
+            {0,3,6},
+            {1,4,7},
+            {2,5,8},
+            {0,4,8},
+            {2,4,6}
+        };
 
-        // vertical
-        if (line.charAt(0) == line.charAt(3) && line.charAt(3) == line.charAt(6) && line.charAt(0) != '-') {
-            return String.valueOf(line.charAt(0));
-        } else if (line.charAt(1) == line.charAt(4) && line.charAt(4) == line.charAt(7) && line.charAt(1) != '-') {
-            return String.valueOf(line.charAt(1));
-        } else if (line.charAt(2) == line.charAt(5) && line.charAt(5) == line.charAt(8) && line.charAt(2) != '-') {
-            return String.valueOf(line.charAt(2));
+        for(int[] winCondition : winConditions){
+            if(gameString.charAt(winCondition[0]) == player &&
+                gameString.charAt(winCondition[1]) == player &&
+                gameString.charAt(winCondition[2]) == player){
+                return true;
+            }
         }
-
-        // diagonal
-        if (line.charAt(0) == line.charAt(4) && line.charAt(4) == line.charAt(8) && line.charAt(0) != '-') {
-            return String.valueOf(line.charAt(0));
-        } else if (line.charAt(2) == line.charAt(4) && line.charAt(4) == line.charAt(6) && line.charAt(2) != '-') {
-            return String.valueOf(line.charAt(2));
-        }
-
-        if (!line.contains("-")) {
-            return "Draw";
-        }
-
-        return "";
+        return false;
     }
 
-    void gameResultsShow(JButton[] buttons, String winner) {
-        // disabling all the buttons
-        for (JButton button : buttons) {
-            button.setEnabled(false);
-        }
-        // pop after the game to show who won.
-        JOptionPane.showMessageDialog(new Frame(), winner + " Won", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-        resetGame(buttons);
+    // given a board, return true if the game is draw.
+    boolean isDraw(String gameString){
+        return !gameString.contains("-");
     }
 
-    // cleaning the game for a new session, same scores for now.
-    void resetGame(JButton[] buttons) {
-        // enable the buttons all the buttons and cleaning board
-        for (JButton button : buttons) {
-            button.setEnabled(true);
+    // computer move
+    int computerMove(String gameString){
+        for(int a =0;a < gameString.length(); a++){
+            if(gameString.charAt(a) == '-'){
+                return a;
+            }
+        }
+        return -1;
+    }
+
+    void boardReset(JButton[] buttons){
+        for(JButton button : buttons){
             button.setText("");
         }
     }
