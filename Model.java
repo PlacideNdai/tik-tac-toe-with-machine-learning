@@ -67,13 +67,81 @@ public class Model {
     }
 
     double evaluation(String gameString, char computer, char player) {
+        int movesMade = 9 - countDashes(gameString);
+
         if (isWinner(computer, gameString))
-            return 1.0;
+            return 1.0 - (movesMade * 0.05);
         if (isWinner(player, gameString))
-            return -1.0;
+            return -1.0 + (movesMade * 0.05);
         if (isDraw(gameString))
-            return 0.0;
-        return 0.0;
+            return 0.2;
+
+        // reward shaping
+        // according to my understanding, reward shaping is when you reward the agent
+        // (in our case computer)
+        // for making 'good moves' example: blocking the opponent's win, taking the
+        // center or cornter
+
+        double reward = 0.0;
+
+        if (gameString.charAt(4) == computer)
+            reward += 0.05;
+
+        // corners
+        int[] corners = { 0, 2, 6, 8 };
+
+        for (int corner : corners) {
+            if (gameString.charAt(corner) == computer)
+                reward += 0.025;
+        }
+
+        if ((thereIsTwoInRow(gameString, player)))
+            reward -= 0.1;
+        if ((thereIsTwoInRow(gameString, computer)))
+            reward += 0.1;
+
+        return reward;
+    }
+
+    // is there two marks in a row? return true if there is
+    boolean thereIsTwoInRow(String gameString, char mark) {
+        int[][] lines = {
+                { 0, 1, 2 },
+                { 3, 4, 5 },
+                { 6, 7, 8 },
+                { 0, 3, 6 },
+                { 1, 4, 7 },
+                { 2, 5, 8 },
+                { 0, 4, 8 },
+                { 2, 4, 6 }
+        };
+
+        for (int[] line : lines) {
+            int count = 0;
+            int empty = 0;
+
+            for (int index : line) {
+                if (gameString.charAt(index) == mark)
+                    count++;
+                if (gameString.charAt(index) == '-')
+                    empty++;
+            }
+
+            if (count == 2 && empty == 1)
+                return true;
+        }
+
+        return false;
+    }
+
+    // counting the dashes in the game string
+    int countDashes(String gameString) {
+        int count = 0;
+        for (char c : gameString.toCharArray()) {
+            if (c == '-')
+                count++;
+        }
+        return count;
     }
 
     void boardReset(JButton[] buttons) {
@@ -91,9 +159,8 @@ public class Model {
         double newQ = (1 - beta) * currentQ + beta * (reward + gamma * maxNextQ);
         qTable.computeIfAbsent(state, k -> new HashMap<>()).put(action, newQ);
 
-        System.out.println("State: " + state + " | Action: " + action +
-                " | Reward: " + reward + " | MaxNextQ: " + maxNextQ +
-                " | NewQ: " + newQ);
+        System.out.println(
+                "Action: " + action + " | Reward: " + reward + " | MaxNextQ: " + maxNextQ + " | NewQ: " + newQ);
     }
 
     // pre trained model
@@ -133,13 +200,16 @@ public class Model {
                     action = bestMove;
                 }
 
+                // Generate the next state
                 StringBuilder nextStateBuilder = new StringBuilder(state);
                 nextStateBuilder.setCharAt(action, currentPlayer);
                 String nextState = nextStateBuilder.toString();
 
+                // Evaluate and learn immediately
                 double reward = evaluation(nextState, 'X', 'O');
                 learn(state, action, nextState, reward, 0.5);
 
+                // Check for terminal condition
                 if (isWinner(currentPlayer, nextState) || isDraw(nextState)) {
                     gameOver = true;
                 }
@@ -147,6 +217,7 @@ public class Model {
                 state = nextState;
                 currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
             }
+
         }
 
         System.out.println("Pre-training complete with " + episodes + " games.");

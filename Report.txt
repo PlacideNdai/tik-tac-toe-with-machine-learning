@@ -1,0 +1,21 @@
+How Beta Affects Learning and Playing in Tic Tac Toe AI
+
+
+In this Tic Tac Toe game, the computer learns how to play using Q-learning, a type of machine learning.
+One important part of this learning is the beta value.
+
+ Beta controls how much the computer learns from each new game it plays. It is also called the learning rate.
+
+If the beta is low (like 0.1)
+, the computer learns slowly. It remembers old strategies more and only makes small changes after each game.
+This can be good for stable learning, but it takes a long time for the computer to get better.
+
+If the beta is high (like 1.0),
+the computer learns quickly. It updates its strategy a lot after each game.
+This helps it improve fast, but it may also forget good moves it learned earlier. It can become unstable and make mistakes.
+
+A medium beta (like 0.5) gives a balance. The computer learns at a steady pace and keeps useful past knowledge.
+ This usually leads to better and more reliable gameplay.
+In training, a high beta helps the computer learn fast. But during real games, a medium or low beta is better for stable performance.
+ Changing beta based on the situation can make the AI smarter and more fun to play with.
+In short, the beta value affects how fast and how well the computer learns. Picking the right beta is important to make the AI strong and smart.
