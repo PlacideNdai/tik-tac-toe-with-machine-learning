@@ -144,16 +144,19 @@ public class Model {
         return count;
     }
 
+    // reset the board method after each game
     void boardReset(JButton[] buttons) {
         for (JButton button : buttons) {
             button.setText("");
         }
     }
 
+    // get the q value method
     private double getQVvalue(String state, int action) {
         return qTable.getOrDefault(state, new HashMap<>()).getOrDefault(action, 0.0);
     }
 
+    // update the q value method
     private void updateQValue(String state, int action, double reward, double maxNextQ, double beta) {
         double currentQ = getQVvalue(state, action);
         double newQ = (1 - beta) * currentQ + beta * (reward + gamma * maxNextQ);
@@ -163,7 +166,7 @@ public class Model {
                 "Action: " + action + " | Reward: " + reward + " | MaxNextQ: " + maxNextQ + " | NewQ: " + newQ);
     }
 
-    // pre trained model
+    // pre trained model so it get better before playing with a real player
     public void trainAgainstItself(int episodes) {
         char[] players = { 'X', 'O' };
         Random rand = new Random();

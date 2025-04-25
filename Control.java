@@ -28,6 +28,7 @@ public class Control extends View implements ActionListener {
         computerMove();
     }
 
+    // button action listener
     @Override
     public void actionPerformed(ActionEvent e) {
         for (int a = 0; a < buttons.length; a++) {
@@ -57,11 +58,13 @@ public class Control extends View implements ActionListener {
             }
         }
 
+        // restart button
         if (e.getSource() == Restart) {
             gameReset();
         }
     }
 
+    // computer move function
     void computerMove() {
         // getting the beta value.
         try {
@@ -120,12 +123,14 @@ public class Control extends View implements ActionListener {
         }
     }
 
+    // reset the game mothod
     void gameReset() {
         model.boardReset(buttons);
         stringGame = "---------";
         computerMove();
     }
 
+    // update the game string method
     void updateGameString(int index, char player) {
         StringBuilder stringBuilder = new StringBuilder(stringGame);
         stringBuilder.setCharAt(index, player);
